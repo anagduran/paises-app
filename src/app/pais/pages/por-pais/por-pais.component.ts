@@ -5,7 +5,11 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-por-pais',
   templateUrl: './por-pais.component.html',
-  styles: [
+  styles: [ `
+    li {
+      cursor: pointer
+    }
+  `
   ]
 })
 export class PorPaisComponent implements OnInit {
@@ -14,9 +18,11 @@ export class PorPaisComponent implements OnInit {
     private paisS: PaisService
   ) { }
 
-  termino: string = "Hola mundo";
+  termino: string = "";
   hayError: boolean = false;
   paises: Country[]= [];
+  paisesSugeridos: Country[]= [];
+  mostrarSugerencias: boolean = false;
 
   ngOnInit(): void {
   }
@@ -24,6 +30,7 @@ export class PorPaisComponent implements OnInit {
   buscar(termino: string){
     this.hayError = false;
     this.termino = termino;
+    this.mostrarSugerencias = false;
     console.log(this.termino)
 
     this.paisS.buscarPais(this.termino).subscribe(
@@ -43,9 +50,22 @@ export class PorPaisComponent implements OnInit {
   }
 
 
-  sugerencias(event: any){
+  sugerencias(termino: string){
     this.hayError = false;
+    this.termino = termino
+    this.mostrarSugerencias = true;
+    this.paisS.buscarPais(termino).subscribe(
+      paises => {
+        this.paisesSugeridos = paises.splice(0,5),
+        (err)=> this.paisesSugeridos = []
+      }
+    )
     
+  }
+
+  buscarSugerido(termino: string){
+    this.buscar(termino);
+   
   }
 
 }
